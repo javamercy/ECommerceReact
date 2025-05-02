@@ -9,17 +9,33 @@ import {
 import { IProduct } from "../../models/IProduct";
 import { AddShoppingCart, Search } from "@mui/icons-material";
 import { Link } from "react-router";
+import requests, { IAddItemToCartRequest } from "../../api/requests";
+import { useCartContext } from "../../context/CartContext";
 
 interface Props {
   product: IProduct;
 }
 
 export default function Product({ product }: Props) {
+  const { cart, setCart } = useCartContext();
+  const customerId = +(localStorage.getItem("CustomerId") || 0);
+
+  function handleAddItem(productId: number) {
+    const request = {
+      productId,
+      customerId,
+      quantity: 1,
+    } as IAddItemToCartRequest;
+
+    requests.Cart.addItemToCart(request)
+      .then((cartResponse) => setCart(cartResponse))
+      .catch((err) => console.log(err));
+  }
   return (
     <Card>
       <CardMedia
-        image={product.imageUrl}
-        sx={{ height: 200, backgroundSize: "cover" }}
+        image={`http://localhost:5132/${product.imageUrl}`}
+        sx={{ height: 300, backgroundSize: "cover" }}
       />
       <CardContent>
         <Typography
@@ -36,6 +52,7 @@ export default function Product({ product }: Props) {
       </CardContent>
       <CardActions>
         <Button
+          onClick={() => handleAddItem(product.id)}
           size="small"
           variant="outlined"
           startIcon={<AddShoppingCart />}

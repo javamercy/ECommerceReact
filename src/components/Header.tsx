@@ -9,7 +9,8 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
+import { useCartContext } from "../context/CartContext";
 
 interface ILink {
   title: string;
@@ -34,6 +35,8 @@ const navStyles = {
 };
 
 export default function Header() {
+  const { cart, setCart } = useCartContext();
+
   return (
     <AppBar position="static">
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -53,8 +56,14 @@ export default function Header() {
           </List>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton size="large" edge="start" color="inherit">
-            <Badge badgeContent="2" color="secondary">
+          <IconButton
+            component={Link}
+            to="/cart"
+            size="large"
+            edge="start"
+            color="inherit"
+          >
+            <Badge badgeContent={cart?.size} color="secondary">
               <ShoppingCart />
             </Badge>
           </IconButton>

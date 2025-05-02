@@ -35,7 +35,10 @@ export default function ProductDetailsPage() {
   return (
     <Grid container spacing={2}>
       <Grid size={{ xl: 3, lg: 4, md: 5, sm: 6, xs: 12 }}>
-        <img src={product.imageUrl} style={{ width: "100%" }}></img>
+        <img
+          src={`http://localhost:5132/${product.imageUrl}`}
+          style={{ width: "100%" }}
+        ></img>
       </Grid>
       <Grid size={{ xl: 9, lg: 8, md: 7, sm: 6, xs: 12 }}>
         <Typography variant="h3">{product.name}</Typography>

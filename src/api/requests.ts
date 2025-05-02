@@ -15,12 +15,14 @@ axios.interceptors.response.use(
   }
 );
 const queries = {
-  get: (url: string) => axios.get(url).then((response) => response.data),
-  getList: (url: string) =>
+  get: <T>(url: string): Promise<T> =>
+    axios.get(url).then((response) => response.data),
+  getList: <T>(url: string): Promise<T> =>
     axios.get(url + "/GetList").then((response) => response.data),
-  post: (url: string, body: object) =>
+  post: <T>(url: string, body: object): Promise<T> =>
     axios.post(url, body).then((response) => response.data),
-  delete: (url: string) => axios.delete(url).then((response) => response.data),
+  delete: <T>(url: string, body: object): Promise<T> =>
+    axios.delete(url, body).then((response) => response.data),
 };
 
 const Catalog = {
@@ -28,8 +30,56 @@ const Catalog = {
   getById: (id: number) => queries.get(`products/${id}`),
 };
 
+const Cart = {
+  getByCustomerId: (request: IGetByCustomerIdRequest): Promise<ICartResponse> =>
+    queries.post(`Carts/GetByCustomerId`, request),
+
+  addItemToCart: (request: IAddItemToCartRequest): Promise<ICartResponse> =>
+    queries.post("Carts/AddCartItemToCart", request),
+
+  deleteCartItemFromCart: (
+    request: IDeleteCartItemFromCartRequest
+  ): Promise<ICartResponse> =>
+    queries.post("Carts/DeleteCartItemFromCart", request),
+};
+
+export interface IGetByCustomerIdRequest {
+  customerId: number;
+}
+
+export interface ICartItemDto {
+  id: number;
+  productId: number;
+  productPrice: number;
+  productName: string;
+  productDescription: string;
+  productImageUrl: string;
+  quantity: number;
+}
+
+export interface ICartResponse {
+  cartId: number;
+  customerId: number;
+  size: number;
+  totalPrice: number;
+  cartItems: ICartItemDto[];
+}
+
+export interface IAddItemToCartRequest {
+  customerId: number;
+  productId: number;
+  quantity: number;
+}
+
+export interface IDeleteCartItemFromCartRequest {
+  cartId: number;
+  productId: number;
+  quantity: number;
+}
+
 const requests = {
   Catalog,
+  Cart,
 };
 
 export default requests;
