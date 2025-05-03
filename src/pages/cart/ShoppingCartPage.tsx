@@ -8,17 +8,35 @@ import {
   TableBody,
   Button,
 } from "@mui/material";
-import { Delete } from "@mui/icons-material";
+import {
+  AddCircleOutlineRounded,
+  Delete,
+  RemoveCircleOutlineOutlined,
+} from "@mui/icons-material";
 import { useCartContext } from "../../context/CartContext";
 
 export default function ShoppingCartPage() {
   const { cart, setCart } = useCartContext();
+
+  const customerId: number = +localStorage.getItem("customerId")!;
 
   function deleteCartItemFromCart(
     request: IDeleteCartItemFromCartRequest
   ): void {
     requests.Cart.deleteCartItemFromCart(request)
       .then((response) => setCart(response))
+      .catch((err) => console.log(err));
+  }
+
+  function handleAddClick(productId: number, quantity: number = 1) {
+    const request = {
+      productId,
+      customerId,
+      quantity,
+    };
+
+    requests.Cart.addItemToCart(request)
+      .then((cartResponse) => setCart(cartResponse))
       .catch((err) => console.log(err));
   }
 
@@ -46,7 +64,17 @@ export default function ShoppingCartPage() {
                 {item.productName}
               </TableCell>
               <TableCell align="left">{item.productDescription}</TableCell>
-              <TableCell align="left">{item.quantity}</TableCell>
+              <TableCell align="left">
+                <Button
+                  startIcon={<AddCircleOutlineRounded />}
+                  onClick={() => handleAddClick(item.productId)}
+                />
+                {item.quantity}
+                <Button
+                  startIcon={<RemoveCircleOutlineOutlined />}
+                  onClick={() => handleAddClick(item.productId, -1)}
+                />
+              </TableCell>
               <TableCell align="left">{item.productPrice} $</TableCell>
               <TableCell align="right">
                 <Button
