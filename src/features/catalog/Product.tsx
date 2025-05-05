@@ -9,16 +9,19 @@ import {
 import { IProduct } from "../../models/IProduct";
 import { AddShoppingCart, Search } from "@mui/icons-material";
 import { Link } from "react-router";
-import requests, { IAddItemToCartRequest } from "../../api/requests";
-import { useCartContext } from "../../context/CartContext";
+import { IAddItemToCartRequest } from "../../api/requests";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { RequestStatus } from "../../enums/requestStatus";
+import { addCartItemToCart } from "../cart/cartSlice";
 
 interface Props {
   product: IProduct;
 }
 
 export default function Product({ product }: Props) {
-  const { cart, setCart } = useCartContext();
   const customerId = +(localStorage.getItem("CustomerId") || 0);
+  const dispatch = useAppDispatch();
+  const { cart, status } = useAppSelector((state) => state.cart);
 
   function handleAddItem(productId: number) {
     const request = {
@@ -27,9 +30,7 @@ export default function Product({ product }: Props) {
       quantity: 1,
     } as IAddItemToCartRequest;
 
-    requests.Cart.addItemToCart(request)
-      .then((cartResponse) => setCart(cartResponse))
-      .catch((err) => console.log(err));
+    dispatch(addCartItemToCart(request));
   }
   return (
     <Card>
@@ -52,6 +53,8 @@ export default function Product({ product }: Props) {
       </CardContent>
       <CardActions>
         <Button
+          loading={status === RequestStatus.LOADING}
+          loadingPosition="center"
           onClick={() => handleAddItem(product.id)}
           size="small"
           variant="outlined"

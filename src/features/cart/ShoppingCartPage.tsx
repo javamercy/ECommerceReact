@@ -13,10 +13,12 @@ import {
   Delete,
   RemoveCircleOutlineOutlined,
 } from "@mui/icons-material";
-import { useCartContext } from "../../context/CartContext";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { addCartItemToCart, setCart } from "./cartSlice";
 
 export default function ShoppingCartPage() {
-  const { cart, setCart } = useCartContext();
+  const { cart } = useAppSelector((state) => state.cart);
+  const dispatch = useAppDispatch();
 
   const customerId: number = +localStorage.getItem("customerId")!;
 
@@ -24,7 +26,7 @@ export default function ShoppingCartPage() {
     request: IDeleteCartItemFromCartRequest
   ): void {
     requests.Cart.deleteCartItemFromCart(request)
-      .then((response) => setCart(response))
+      .then((response) => dispatch(setCart(response)))
       .catch((err) => console.log(err));
   }
 
@@ -35,9 +37,7 @@ export default function ShoppingCartPage() {
       quantity,
     };
 
-    requests.Cart.addItemToCart(request)
-      .then((cartResponse) => setCart(cartResponse))
-      .catch((err) => console.log(err));
+    dispatch(addCartItemToCart(request));
   }
 
   return (

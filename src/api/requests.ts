@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
+import { IProduct } from "../models/IProduct";
 
 axios.defaults.baseURL = "http://localhost:5132/api/";
 
@@ -26,8 +27,8 @@ const queries = {
 };
 
 const Catalog = {
-  getList: () => queries.getList("products"),
-  getById: (id: number) => queries.get(`products/${id}`),
+  getList: (): Promise<IProduct[]> => queries.getList("Products"),
+  getById: (id: number): Promise<IProduct> => queries.get(`Products/${id}`),
 };
 
 const Cart = {

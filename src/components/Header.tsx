@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Link, NavLink } from "react-router";
-import { useCartContext } from "../context/CartContext";
+import { useAppSelector } from "../hooks/hooks";
 
 interface ILink {
   title: string;
@@ -35,8 +35,7 @@ const navStyles = {
 };
 
 export default function Header() {
-  const { cart, setCart } = useCartContext();
-
+  const { cart } = useAppSelector((state) => state.cart);
   return (
     <AppBar position="static">
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
