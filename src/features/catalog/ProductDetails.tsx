@@ -1,5 +1,6 @@
+import { useEffect } from "react";
+
 import {
-  CircularProgress,
   Divider,
   Grid,
   Table,
@@ -9,26 +10,28 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { IProduct } from "../../models/IProduct";
-import requests from "../../api/requests";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { getProductById, selectProductById } from "./catalogSlice";
+import { RequestStatus } from "../../enums/requestStatus";
 
 export default function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<IProduct | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+
+  const product = useAppSelector((state) => selectProductById(state, +id!));
+  const { status } = useAppSelector((state) => state.catalog);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (id) {
-      requests.Catalog.getById(+id)
-        .then((data) => setProduct(data))
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
+    if (
+      id &&
+      !product &&
+      status != RequestStatus.LOADING &&
+      status != RequestStatus.SUCCESS
+    ) {
+      dispatch(getProductById(+id));
     }
-  }, [id]);
-
-  if (loading) return <CircularProgress></CircularProgress>;
+  }, [dispatch, id, product, status]);
 
   if (!product) return <h3>Not Found...</h3>;
 

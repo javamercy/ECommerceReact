@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ProductList from "./ProductList";
-import { IProduct } from "../../models/IProduct";
-import requests from "../../api/requests";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { getProducts, selectAllProducts } from "./catalogSlice";
+import { RequestStatus } from "../../enums/requestStatus";
 
 export default function CatalogPage() {
-  const [products, setProducts] = useState([] as IProduct[]);
+  const products = useAppSelector(selectAllProducts);
+  const dispatch = useAppDispatch();
+  const { status } = useAppSelector((state) => state.catalog);
 
   useEffect(() => {
-    requests.Catalog.getList()
-      .then((data) => setProducts(data))
-      .catch((err) => console.error(err));
-  }, []);
+    if (status != RequestStatus.SUCCESS && status != RequestStatus.LOADING) {
+      dispatch(getProducts());
+    }
+  }, [dispatch, status]);
 
   return <ProductList products={products} />;
 }
